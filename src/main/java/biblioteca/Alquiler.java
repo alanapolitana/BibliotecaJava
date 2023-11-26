@@ -14,7 +14,7 @@ public class Alquiler {
         this.usuario = usuario;
         this.libro = libro;
         this.fechaAlquiler = LocalDate.now();
-        this.fechaDevolucion = null;
+        this.fechaDevolucion = this.fechaAlquiler.plusDays(15); // Fecha de devolución 15 días después del alquiler
         this.devuelto = false;
     }
 

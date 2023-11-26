@@ -1,321 +1,254 @@
 package biblioteca;
 
-import biblioteca.excepciones.DevolucionFueraDePlazoException;
-import biblioteca.notificacion.AbstractBiblioteca;
-import biblioteca.notificacion.SistemaNotificacion;
-import biblioteca.notificacion.SistemaNotificacionConsola;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Biblioteca {
-    private List<Libro> libros;
     private List<Usuario> usuarios;
+    private List<Libro> libros;
     private List<Alquiler> alquileres;
-    private SistemaNotificacion sistemaNotificacion;
 
-    public Biblioteca(List<Libro> libros, List<Usuario> usuarios, List<Alquiler> alquileres, SistemaNotificacion sistemaNotificacion) {
-        this.libros = libros;
-        this.usuarios = usuarios;
-        this.alquileres = alquileres;
-        this.sistemaNotificacion = sistemaNotificacion;
+    public Biblioteca() {
+        this.usuarios = new ArrayList<>();
+        this.libros = new ArrayList<>();
+        this.alquileres = new ArrayList<>();
+    }
+
+    public void registrarUsuario(Usuario usuario) {
+        usuarios.add(usuario);
     }
 
     public void agregarLibro(Libro libro) {
         libros.add(libro);
-        System.out.println("Libro agregado: " + libro.getTitulo());
     }
 
-    public void eliminarLibro(Libro libro) {
-        libros.remove(libro);
-        System.out.println("Libro eliminado: " + libro.getTitulo());
-    }
+    public Usuario login() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese su correo electrónico:");
+        String correo = scanner.nextLine();
+        System.out.println("Ingrese su contraseña:");
+        String contraseña = scanner.nextLine();
 
-    public void realizarAlquiler(Usuario usuario, Libro libro) {
-        Alquiler alquiler = new Alquiler(usuario, libro);
-        alquileres.add(alquiler);
-        usuario.agregarAlquiler(alquiler);
-        libro.setDisponible(false);
-
-        sistemaNotificacion.notificarUsuario("Has alquilado el libro: " + libro.getTitulo());
-    }
-
-    public void devolverLibro(Alquiler alquiler) {
-        alquiler.getLibro().setDisponible(true);
-        alquileres.remove(alquiler);
-        alquiler.getUsuario().eliminarAlquiler(alquiler);
-
-        sistemaNotificacion.notificarUsuario("Has devuelto el libro: " + alquiler.getLibro().getTitulo());
-    }
-
-    public List<Libro> buscarLibros(String criterio, String valor) {
-        List<Libro> resultados = new ArrayList<>();
-        for (Libro libro : libros) {
-            switch (criterio.toLowerCase()) {
-                case "titulo":
-                    if (libro.getTitulo().toLowerCase().contains(valor.toLowerCase())) {
-                        resultados.add(libro);
-                    }
-                    break;
-                case "autor":
-                    if (libro.getAutor().toLowerCase().contains(valor.toLowerCase())) {
-                        resultados.add(libro);
-                    }
-                    break;
-                case "genero":
-                    if (libro.getGenero().toLowerCase().contains(valor.toLowerCase())) {
-                        resultados.add(libro);
-                    }
-                    break;
-                default:
-                    System.out.println("Criterio de búsqueda no válido");
-                    break;
+        for (Usuario usuario : usuarios) {
+            if (usuario.getCorreo().equals(correo) && usuario.getContraseña().equals(contraseña)) {
+                System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuario.getNombre() + "!");
+                return usuario;
             }
         }
-        return resultados;
-    }
 
-    public void generarInforme() {
-        System.out.println("Generando informe...");
-        // Lógica para generar informes y estadísticas
+        System.out.println("Credenciales incorrectas. Por favor, intente nuevamente.");
+        return null;
     }
 
     public void menuPrincipal() {
         Scanner scanner = new Scanner(System.in);
-        int opcion;
-        Usuario usuarioActual = null;
+        Usuario usuario = null;
 
-        do {
-            if (usuarioActual == null) {
-                // Menú para usuario no registrado
-                System.out.println("Menú Principal");
-                System.out.println("1. Registrarse");
-                System.out.println("2. Iniciar sesión");
-                System.out.println("0. Salir");
-                System.out.print("Seleccione una opción: ");
-                opcion = scanner.nextInt();
-
-                switch (opcion) {
-                    case 1:
-                        // Lógica para registrar nuevo usuario
-                        System.out.println("Ingrese detalles para registrarse:");
-                        System.out.print("Nombre: ");
-                        String nombreRegistro = scanner.next();
-                        System.out.print("Correo electrónico: ");
-                        String correoRegistro = scanner.next();
-                        usuarioActual = new Usuario(nombreRegistro, correoRegistro, new ArrayList<>());
-                        usuarios.add(usuarioActual);
-                        System.out.println("Registrado con éxito. Ahora puedes iniciar sesión.");
-                        break;
-                    case 2:
-                        // Lógica para iniciar sesión
-                        System.out.println("Ingrese detalles para iniciar sesión:");
-                        System.out.print("Correo electrónico: ");
-                        String correoInicioSesion = scanner.next();
-                        usuarioActual = buscarUsuarioPorCorreo(correoInicioSesion);
-                        if (usuarioActual != null) {
-                            System.out.println("Inicio de sesión exitoso. ¡Bienvenido, " + usuarioActual.getNombre() + "!");
-                        } else {
-                            System.out.println("Inicio de sesión fallido. Usuario no encontrado.");
-                        }
-                        break;
-                    case 0:
-                        System.out.println("Saliendo del programa...");
-                        break;
-                    default:
-                        System.out.println("Opción no válida. Intente de nuevo.");
-                }
-            } else {
-                // Menú para usuario registrado
-                System.out.println("Menú de la Biblioteca");
-                System.out.println("1. Gestionar Libros");
-                System.out.println("2. Realizar Alquiler");
-                System.out.println("3. Devolver Libro");
-                System.out.println("4. Consultas y Búsquedas");
-                System.out.println("5. Informes y Estadísticas");
-                System.out.println("0. Cerrar sesión");
-                System.out.print("Seleccione una opción: ");
-                opcion = scanner.nextInt();
-
-                switch (opcion) {
-                    case 1:
-                        gestionarLibros();
-                        break;
-                    case 2:
-                        realizarAlquiler(usuarioActual);
-                        break;
-                    case 3:
-                        devolverLibro(usuarioActual);
-                        break;
-                    case 4:
-                        consultarLibros();
-                        break;
-                    case 5:
-                        generarInforme();
-                        break;
-                    case 0:
-                        System.out.println("Cerrando sesión de " + usuarioActual.getNombre() + "...");
-                        usuarioActual = null;
-                        break;
-                    default:
-                        System.out.println("Opción no válida. Intente de nuevo.");
-                }
-            }
-        } while (opcion != 0);
-    }
-
-    private Usuario buscarUsuarioPorCorreo(String correo) {
-        for (Usuario usuario : usuarios) {
-            if (usuario.getCorreo().equalsIgnoreCase(correo)) {
-                return usuario;
-            }
-        }
-        return null;
-    }
-
-    private void gestionarLibros() {
-        Scanner scanner = new Scanner(System.in);
-        int opcion;
-
-        do {
-            System.out.println("Menú de Gestión de Libros");
-            System.out.println("1. Agregar libro");
-            System.out.println("2. Eliminar libro");
-            System.out.println("3. Volver al menú principal");
+        while (usuario == null) {
+            System.out.println("\n--- Biblioteca - Menú Principal ---");
+            System.out.println("1. Registrarse");
+            System.out.println("2. Iniciar sesión");
+            System.out.println("3. Salir");
             System.out.print("Seleccione una opción: ");
-            opcion = scanner.nextInt();
+
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer de entrada
 
             switch (opcion) {
                 case 1:
-                    // Lógica para agregar libro
-                    System.out.println("Ingrese detalles del libro:");
-                    System.out.print("Título: ");
-                    String titulo = scanner.next();
-                    System.out.print("Autor: ");
-                    String autor = scanner.next();
-                    System.out.print("Género: ");
-                    String genero = scanner.next();
-                    Libro nuevoLibro = new Libro(titulo, autor, genero, true);
-                    agregarLibro(nuevoLibro);
+                    usuario = registrarNuevoUsuario();
                     break;
                 case 2:
-                    // Lógica para eliminar libro
-                    System.out.println("Seleccione el libro a eliminar:");
-                    for (int i = 0; i < libros.size(); i++) {
-                        System.out.println(i + 1 + ". " + libros.get(i).getTitulo());
-                    }
-                    int indiceEliminar = scanner.nextInt();
-                    if (indiceEliminar >= 1 && indiceEliminar <= libros.size()) {
-                        Libro libroEliminar = libros.get(indiceEliminar - 1);
-                        eliminarLibro(libroEliminar);
-                    } else {
-                        System.out.println("Índice no válido. Intente de nuevo.");
-                    }
+                    usuario = login();
                     break;
                 case 3:
-                    System.out.println("Volviendo al menú principal...");
-                    break;
+                    System.out.println("Saliendo del sistema. ¡Hasta luego!");
+                    System.exit(0);
                 default:
-                    System.out.println("Opción no válida. Intente de nuevo.");
+                    System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
             }
-        } while (opcion != 3);
+        }
+
+        // Continuar con el menú de la biblioteca después de iniciar sesión
+        menuBiblioteca(usuario);
     }
 
-    private void realizarAlquiler(Usuario usuario) {
+    public Usuario registrarNuevoUsuario() {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Registro de Nuevo Usuario ---");
+        System.out.println("Ingrese su nombre:");
+        String nombre = scanner.nextLine();
+        System.out.println("Ingrese su correo electrónico:");
+        String correo = scanner.nextLine();
+        System.out.println("Ingrese su contraseña:");
+        String contraseña = scanner.nextLine();
 
-        System.out.println("Seleccione el libro para alquiler:");
-        for (int i = 0; i < libros.size(); i++) {
-            System.out.println(i + 1 + ". " + libros.get(i).getTitulo());
-        }
-        int indiceLibro = scanner.nextInt();
-        if (indiceLibro >= 1 && indiceLibro <= libros.size()) {
-            Libro libroAlquiler = libros.get(indiceLibro - 1);
-            realizarAlquiler(usuario, libroAlquiler);
-        } else {
-            System.out.println("Índice no válido. Intente de nuevo.");
-        }
+        Usuario nuevoUsuario = new Usuario(usuarios.size() + 1, nombre, correo, contraseña, new ArrayList<>());
+        usuarios.add(nuevoUsuario);
+
+        System.out.println("Registro exitoso. ¡Bienvenido, " + nuevoUsuario.getNombre() + "!");
+        return nuevoUsuario;
     }
 
-    private void devolverLibro(Usuario usuario) {
+    public void menuBiblioteca(Usuario usuario) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Libros alquilados por " + usuario.getNombre() + ":");
-        List<Libro> librosAlquilados = usuario.getLibrosAlquilados();
-        for (int i = 0; i < librosAlquilados.size(); i++) {
-            System.out.println(i + 1 + ". " + librosAlquilados.get(i).getTitulo());
-        }
+        while (true) {
+            System.out.println("\n--- Biblioteca - Menú de Usuario ---");
+            System.out.println("1. Ver catálogo de libros");
+            System.out.println("2. Alquilar libro");
+            System.out.println("3. Devolver libro");
+            System.out.println("4. Ver libros alquilados");
+            System.out.println("5. Salir");
 
-        if (librosAlquilados.isEmpty()) {
-            System.out.println("No tienes libros alquilados.");
-            return;
-        }
+            System.out.print("Seleccione una opción: ");
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer de entrada
 
-        System.out.println("Seleccione el libro para devolver:");
-        int indiceLibroDevolver = scanner.nextInt();
-        if (indiceLibroDevolver >= 1 && indiceLibroDevolver <= librosAlquilados.size()) {
-            Libro libroDevolver = librosAlquilados.get(indiceLibroDevolver - 1);
-            Alquiler alquilerDevolver = usuario.getAlquilerPorLibro(libroDevolver);
-            devolverLibro(alquilerDevolver);
-        } else {
-            System.out.println("Índice no válido. Intente de nuevo.");
-        }
-    }
-
-    private void consultarLibros() {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Menú de Consultas y Búsquedas");
-        System.out.println("1. Buscar libros por título");
-        System.out.println("2. Buscar libros por autor");
-        System.out.println("3. Buscar libros por género");
-        System.out.println("4. Volver al menú principal");
-        System.out.print("Seleccione una opción: ");
-        int opcion = scanner.nextInt();
-
-        switch (opcion) {
-            case 1:
-                buscarLibrosPorCriterio("titulo");
-                break;
-            case 2:
-                buscarLibrosPorCriterio("autor");
-                break;
-            case 3:
-                buscarLibrosPorCriterio("genero");
-                break;
-            case 4:
-                System.out.println("Volviendo al menú principal...");
-                break;
-            default:
-                System.out.println("Opción no válida. Intente de nuevo.");
-        }
-    }
-
-    private void buscarLibrosPorCriterio(String criterio) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Ingrese el valor para la búsqueda: ");
-        String valor = scanner.next();
-
-        List<Libro> resultados = buscarLibros(criterio, valor);
-
-        if (!resultados.isEmpty()) {
-            System.out.println("Resultados de la búsqueda:");
-            for (int i = 0; i < resultados.size(); i++) {
-                System.out.println(i + 1 + ". " + resultados.get(i).getTitulo());
+            switch (opcion) {
+                case 1:
+                    verCatalogoLibros();
+                    break;
+                case 2:
+                    alquilarLibro(usuario);
+                    break;
+                case 3:
+                    devolverLibro(usuario);
+                    break;
+                case 4:
+                    verLibrosAlquilados(usuario);
+                    break;
+                case 5:
+                    System.out.println("Saliendo del sistema. ¡Hasta luego!");
+                    System.exit(0);
+                default:
+                    System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
             }
-        } else {
-            System.out.println("No se encontraron resultados para la búsqueda.");
+        }
+    }
+
+    public void verCatalogoLibros() {
+        System.out.println("\n--- Catálogo de Libros ---");
+        for (Libro libro : libros) {
+            if (libro.isDisponible()) {
+                System.out.println(libro.getTitulo() + " - " + libro.getAutor() + " - " + libro.getGenero());
+            }
+        }
+    }
+
+    public void alquilarLibro(Usuario usuario) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Alquiler de Libro ---");
+        verCatalogoLibros();
+        System.out.println("Ingrese el título del libro que desea alquilar:");
+        String tituloLibro = scanner.nextLine();
+
+        for (Libro libro : libros) {
+            if (libro.getTitulo().equalsIgnoreCase(tituloLibro) && libro.isDisponible()) {
+                Alquiler nuevoAlquiler = new Alquiler(usuario, libro);
+                alquileres.add(nuevoAlquiler);
+                usuario.agregarAlquiler(nuevoAlquiler);
+                libro.setDisponible(false);
+                System.out.println("Libro alquilado con éxito. Fecha de devolución: " + nuevoAlquiler.getFechaDevolucion());
+                return;
+            }
+        }
+
+        System.out.println("Libro no disponible o no encontrado. Por favor, seleccione otro libro.");
+    }
+
+    public void devolverLibro(Usuario usuario) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Devolución de Libro ---");
+        System.out.println("Libros alquilados:");
+        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+            System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion());
+        }
+        System.out.println("Ingrese el título del libro que desea devolver:");
+        String tituloLibro = scanner.nextLine();
+
+        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+            if (alquiler.getLibro().getTitulo().equalsIgnoreCase(tituloLibro) && !alquiler.isDevuelto()) {
+                alquiler.setDevuelto(true);
+                alquiler.getLibro().setDisponible(true);
+                System.out.println("Libro devuelto con éxito.");
+                return;
+            }
+        }
+
+        System.out.println("Libro no encontrado en su lista de libros alquilados.");
+    }
+
+    public void verLibrosAlquilados(Usuario usuario) {
+        System.out.println("\n--- Libros Alquilados ---");
+        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+            System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion());
         }
     }
 
     public static void main(String[] args) {
-        List<Libro> libros = new ArrayList<>();
-        List<Usuario> usuarios = new ArrayList<>();
-        List<Alquiler> alquileres = new ArrayList<>();
+        Biblioteca biblioteca = new Biblioteca();
 
-        Biblioteca biblioteca = new Biblioteca(libros, usuarios, alquileres, new SistemaNotificacionConsola());
+        // Crear instancias de usuarios
+        Usuario usuario1 = new Usuario(1, "Lionel Messi", "messi@gmail.com", "messi123", new ArrayList<>());
+        Usuario usuario2 = new Usuario(2, "Diego Maradona", "maradona@gmail.com", "maradona123", new ArrayList<>());
+        Usuario usuario3 = new Usuario(3, "Carlos Tevez", "tevez@gmail.com", "tevez123", new ArrayList<>());
+        Usuario usuario4 = new Usuario(4, "Luis Suárez", "suarez@gmail.com", "suarez123", new ArrayList<>());
+        Usuario usuario5 = new Usuario(5, "Juan Román Riquelme", "riquelme@gmail.com", "riquelme123", new ArrayList<>());
+
+        // Crear instancias de libros de Marvel
+        Libro libro1 = new Libro("Spider-Man: No Way Home", "Various", "Action", true);
+        Libro libro2 = new Libro("Eternals", "Various", "Adventure", true);
+        Libro libro3 = new Libro("Shang-Chi and the Legend of the Ten Rings", "Various", "Fantasy", true);
+        Libro libro4 = new Libro("Black Widow", "Various", "Action", true);
+        Libro libro5 = new Libro("Doctor Strange in the Multiverse of Madness", "Various", "Adventure", true);
+
+        // Crear instancias de novelas conocidas
+        Libro libro6 = new Libro("To Kill a Mockingbird", "Harper Lee", "Fiction", true);
+        Libro libro7 = new Libro("1984", "George Orwell", "Dystopian", true);
+        Libro libro8 = new Libro("Pride and Prejudice", "Jane Austen", "Romance", true);
+        Libro libro9 = new Libro("The Great Gatsby", "F. Scott Fitzgerald", "Classic", true);
+        Libro libro10 = new Libro("The Catcher in the Rye", "J.D. Salinger", "Coming-of-age", true);
+
+        // Crear instancias de novelas nacionales
+        Libro libro11 = new Libro("Don Segundo Sombra", "Ricardo Güiraldes", "Gaucho literature", true);
+        Libro libro12 = new Libro("Martín Fierro", "José Hernández", "Epic poetry", true);
+        Libro libro13 = new Libro("Santa Evita", "Tomás Eloy Martínez", "Historical fiction", true);
+        Libro libro14 = new Libro("Hopscotch", "Julio Cortázar", "Experimental fiction", true);
+        Libro libro15 = new Libro("The Invention of Morel", "Adolfo Bioy Casares", "Science fiction", true);
+
+        // Crear instancias de alquileres realizados
+        Alquiler alquiler1 = new Alquiler(usuario1, libro1);
+        Alquiler alquiler2 = new Alquiler(usuario2, libro6);
+
+        // Agregar usuarios, libros y alquileres a la biblioteca
+        biblioteca.registrarUsuario(usuario1);
+        biblioteca.registrarUsuario(usuario2);
+        biblioteca.registrarUsuario(usuario3);
+        biblioteca.registrarUsuario(usuario4);
+        biblioteca.registrarUsuario(usuario5);
+
+        biblioteca.agregarLibro(libro1);
+        biblioteca.agregarLibro(libro2);
+        biblioteca.agregarLibro(libro3);
+        biblioteca.agregarLibro(libro4);
+        biblioteca.agregarLibro(libro5);
+        biblioteca.agregarLibro(libro6);
+        biblioteca.agregarLibro(libro7);
+        biblioteca.agregarLibro(libro8);
+        biblioteca.agregarLibro(libro9);
+        biblioteca.agregarLibro(libro10);
+        biblioteca.agregarLibro(libro11);
+        biblioteca.agregarLibro(libro12);
+        biblioteca.agregarLibro(libro13);
+        biblioteca.agregarLibro(libro14);
+        biblioteca.agregarLibro(libro15);
+
+        biblioteca.alquileres.add(alquiler1);
+        biblioteca.alquileres.add(alquiler2);
+        
+        // Iniciar el menú principal de la biblioteca
         biblioteca.menuPrincipal();
     }
 }

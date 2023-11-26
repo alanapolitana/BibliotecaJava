@@ -4,18 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Usuario {
+    private int ID_usuario;
     private String nombre;
     private String correo;
-    private List<Alquiler> alquileres;
+    private String contraseña;
+    private List<Alquiler> librosAlquilados;
 
     // Constructor
-    public Usuario(String nombre, String correo, List<Alquiler> alquileres) {
+    public Usuario(int ID_usuario, String nombre, String correo, String contraseña, List<Alquiler> librosAlquilados) {
+        this.ID_usuario = ID_usuario;
         this.nombre = nombre;
         this.correo = correo;
-        this.alquileres = alquileres;
+        this.contraseña = contraseña;
+        this.librosAlquilados = librosAlquilados;
     }
 
     // Getters y setters (puedes generarlos automáticamente en tu IDE)
+    public int getID_usuario() {
+        return ID_usuario;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -32,30 +40,27 @@ public class Usuario {
         this.correo = correo;
     }
 
-    public List<Alquiler> getAlquileres() {
-        return alquileres;
+    public String getContraseña() {
+        return contraseña;
     }
 
-    public void setAlquileres(List<Alquiler> alquileres) {
-        this.alquileres = alquileres;
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
+
+    public List<Alquiler> getLibrosAlquilados() {
+        return librosAlquilados;
+    }
+
+    public void setLibrosAlquilados(List<Alquiler> librosAlquilados) {
+        this.librosAlquilados = librosAlquilados;
     }
 
     public void agregarAlquiler(Alquiler alquiler) {
-        alquileres.add(alquiler);
+        librosAlquilados.add(alquiler);
     }
 
     public void eliminarAlquiler(Alquiler alquiler) {
-        alquileres.remove(alquiler);
-    }
-
-    // Métodos faltantes
-    public List<Libro> getLibrosAlquilados() {
-        // Puedes implementar esta lógica según sea necesario
-        return new ArrayList<>();
-    }
-
-    public Alquiler getAlquilerPorLibro(Libro libro) {
-        // Puedes implementar esta lógica según sea necesario
-        return null;
+        librosAlquilados.remove(alquiler);
     }
 }
