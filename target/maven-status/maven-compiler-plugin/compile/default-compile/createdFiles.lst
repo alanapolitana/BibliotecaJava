@@ -1,5 +1,4 @@
 biblioteca\excepciones\DevolucionFueraDePlazoException.class
-biblioteca\notificacion\SistemaNotificacionConsola.class
 biblioteca\Alquiler.class
 biblioteca\Libro.class
 biblioteca\Biblioteca.class
@@ -7,3 +6,4 @@ biblioteca\excepciones\LibroNoEncontradoException.class
 biblioteca\notificacion\AbstractBiblioteca.class
 biblioteca\notificacion\SistemaNotificacion.class
 biblioteca\Usuario.class
+biblioteca\Utils\ConsultasUtils.class

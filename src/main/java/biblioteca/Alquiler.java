@@ -53,5 +53,5 @@ public class Alquiler {
 
     public void setDevuelto(boolean devuelto) {
         this.devuelto = devuelto;
-    }
+    } 
 }

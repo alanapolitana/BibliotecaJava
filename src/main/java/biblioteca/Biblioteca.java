@@ -70,7 +70,7 @@ public class Biblioteca {
             }
         }
 
-        // Continuar con el menú de la biblioteca después de iniciar sesión
+     
         menuBiblioteca(usuario);
     }
 
@@ -119,6 +119,7 @@ public class Biblioteca {
                 case 4:
                     verLibrosAlquilados(usuario);
                     break;
+                    
                 case 5:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");
                     System.exit(0);
@@ -158,71 +159,73 @@ public class Biblioteca {
         System.out.println("Libro no disponible o no encontrado. Por favor, seleccione otro libro.");
     }
 
-    public void devolverLibro(Usuario usuario) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\n--- Devolución de Libro ---");
-        System.out.println("Libros alquilados:");
-        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
-            System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion());
-        }
-        System.out.println("Ingrese el título del libro que desea devolver:");
-        String tituloLibro = scanner.nextLine();
-
-        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
-            if (alquiler.getLibro().getTitulo().equalsIgnoreCase(tituloLibro) && !alquiler.isDevuelto()) {
-                alquiler.setDevuelto(true);
-                alquiler.getLibro().setDisponible(true);
-                System.out.println("Libro devuelto con éxito.");
-                return;
-            }
-        }
-
-        System.out.println("Libro no encontrado en su lista de libros alquilados.");
+public void devolverLibro(Usuario usuario) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("\n--- Devolución de Libro ---");
+    System.out.println("Libros alquilados:");
+    for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+        String estadoDevolucion = alquiler.isDevuelto() ? "Devuelto" : "No devuelto";
+        System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion() +
+                " - Estado: " + estadoDevolucion);
     }
+    System.out.println("Ingrese el título del libro que desea devolver:");
+    String tituloLibro = scanner.nextLine();
+
+    for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+        if (alquiler.getLibro().getTitulo().equalsIgnoreCase(tituloLibro) && !alquiler.isDevuelto()) {
+            alquiler.setDevuelto(true);
+            alquiler.getLibro().setDisponible(true);
+            System.out.println("Libro devuelto con éxito.");
+            return;
+        }
+    }
+
+    System.out.println("Libro no encontrado en su lista de libros alquilados o ya ha sido devuelto.");
+}
 
     public void verLibrosAlquilados(Usuario usuario) {
         System.out.println("\n--- Libros Alquilados ---");
         for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
-            System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion());
+            String estadoDevuelto = alquiler.isDevuelto() ? " - Estado: Devuelto" : " - Estado: No devuelto";
+            System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion() + estadoDevuelto);
         }
     }
-
     public static void main(String[] args) {
         Biblioteca biblioteca = new Biblioteca();
 
-        // Crear instancias de usuarios
+        
         Usuario usuario1 = new Usuario(1, "Lionel Messi", "messi@gmail.com", "messi123", new ArrayList<>());
         Usuario usuario2 = new Usuario(2, "Diego Maradona", "maradona@gmail.com", "maradona123", new ArrayList<>());
         Usuario usuario3 = new Usuario(3, "Carlos Tevez", "tevez@gmail.com", "tevez123", new ArrayList<>());
         Usuario usuario4 = new Usuario(4, "Luis Suárez", "suarez@gmail.com", "suarez123", new ArrayList<>());
         Usuario usuario5 = new Usuario(5, "Juan Román Riquelme", "riquelme@gmail.com", "riquelme123", new ArrayList<>());
 
-        // Crear instancias de libros de Marvel
+        
         Libro libro1 = new Libro("Spider-Man: No Way Home", "Various", "Action", true);
         Libro libro2 = new Libro("Eternals", "Various", "Adventure", true);
         Libro libro3 = new Libro("Shang-Chi and the Legend of the Ten Rings", "Various", "Fantasy", true);
         Libro libro4 = new Libro("Black Widow", "Various", "Action", true);
         Libro libro5 = new Libro("Doctor Strange in the Multiverse of Madness", "Various", "Adventure", true);
 
-        // Crear instancias de novelas conocidas
+        
         Libro libro6 = new Libro("To Kill a Mockingbird", "Harper Lee", "Fiction", true);
         Libro libro7 = new Libro("1984", "George Orwell", "Dystopian", true);
         Libro libro8 = new Libro("Pride and Prejudice", "Jane Austen", "Romance", true);
         Libro libro9 = new Libro("The Great Gatsby", "F. Scott Fitzgerald", "Classic", true);
         Libro libro10 = new Libro("The Catcher in the Rye", "J.D. Salinger", "Coming-of-age", true);
 
-        // Crear instancias de novelas nacionales
+        
         Libro libro11 = new Libro("Don Segundo Sombra", "Ricardo Güiraldes", "Gaucho literature", true);
         Libro libro12 = new Libro("Martín Fierro", "José Hernández", "Epic poetry", true);
         Libro libro13 = new Libro("Santa Evita", "Tomás Eloy Martínez", "Historical fiction", true);
         Libro libro14 = new Libro("Hopscotch", "Julio Cortázar", "Experimental fiction", true);
         Libro libro15 = new Libro("The Invention of Morel", "Adolfo Bioy Casares", "Science fiction", true);
 
-        // Crear instancias de alquileres realizados
+        
         Alquiler alquiler1 = new Alquiler(usuario1, libro1);
         Alquiler alquiler2 = new Alquiler(usuario2, libro6);
 
-        // Agregar usuarios, libros y alquileres a la biblioteca
+       
         biblioteca.registrarUsuario(usuario1);
         biblioteca.registrarUsuario(usuario2);
         biblioteca.registrarUsuario(usuario3);
@@ -247,8 +250,7 @@ public class Biblioteca {
 
         biblioteca.alquileres.add(alquiler1);
         biblioteca.alquileres.add(alquiler2);
-        
-        // Iniciar el menú principal de la biblioteca
+     
         biblioteca.menuPrincipal();
     }
 }
