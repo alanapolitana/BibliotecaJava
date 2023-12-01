@@ -2,6 +2,8 @@ package biblioteca;
 
 import biblioteca.notificacion.AbstractBiblioteca;
 import biblioteca.Utils.ConsultasUtils;
+import biblioteca.excepciones.LibroNoEncontradoException;
+import biblioteca.excepciones.DevolucionFueraDePlazoException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,8 +114,9 @@ public class Biblioteca extends AbstractBiblioteca {
             System.out.println("3. Devolver libro");
             System.out.println("4. Ver libros alquilados");
             System.out.println("5. Administrar libros"); 
-            System.out.println("6. Consultas");
-            System.out.println("7. Salir");
+            System.out.println("6. Consultas Alquileres ");
+            System.out.println("7. Busqueda por Genero Autor o Titulo");
+            System.out.println("8. Salir");
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
             scanner.nextLine(); 
@@ -138,6 +141,9 @@ public class Biblioteca extends AbstractBiblioteca {
                     realizarConsultas();
                     break;
                 case 7:
+                    menuConsultas();
+                    break;
+                case 8:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");
                     System.exit(0);
                
@@ -171,6 +177,136 @@ public void realizarConsultas() {
                     System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
             }
         }
+    }
+
+public void menuConsultas() {
+    Scanner scanner = new Scanner(System.in);
+
+    while (true) {
+        System.out.println("\n--- Consultas ---");
+        System.out.println("1. Búsqueda de libro por título");
+        System.out.println("2. Búsqueda de libro por autor");
+        System.out.println("3. Búsqueda de libro por género");
+        System.out.println("4. Volver al menú principal");
+        System.out.print("Seleccione una opción: ");
+
+        int opcion = scanner.nextInt();
+        scanner.nextLine(); // Limpiar el buffer de entrada
+
+        switch (opcion) {
+           
+            case 1:
+                buscarLibroPorTitulo();
+                break;
+            case 2:
+                buscarLibroPorAutor();
+                break;
+            case 3:
+                buscarLibroPorGenero();
+                break;
+            case 4:
+                return;
+            default:
+                System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
+        }
+    }
+}
+// Nuevo método para buscar libros por título
+    public void buscarLibroPorTitulo() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Búsqueda de Libro por Título ---");
+        System.out.println("Ingrese el título del libro:");
+        String tituloLibro = scanner.nextLine();
+
+        try {
+            Libro libroEncontrado = buscarLibroPorTitulo(tituloLibro);
+            System.out.println("Libro encontrado: " + libroEncontrado);
+        } catch (LibroNoEncontradoException e) {
+            System.out.println("Libro no encontrado: " + e.getMessage());
+        }
+    }
+
+    // Nuevo método para buscar libros por autor
+    public void buscarLibroPorAutor() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Búsqueda de Libro por Autor ---");
+        System.out.println("Ingrese el autor del libro:");
+        String autorLibro = scanner.nextLine();
+
+        try {
+            List<Libro> librosEncontrados = buscarLibroPorAutor(autorLibro);
+            if (!librosEncontrados.isEmpty()) {
+                System.out.println("Libros encontrados:");
+                for (Libro libro : librosEncontrados) {
+                    System.out.println(libro);
+                }
+            } else {
+                System.out.println("No se encontraron libros del autor especificado.");
+            }
+        } catch (LibroNoEncontradoException e) {
+            System.out.println("Libros no encontrados: " + e.getMessage());
+        }
+    }
+
+    // Nuevo método para buscar libros por género
+    public void buscarLibroPorGenero() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Búsqueda de Libro por Género ---");
+        System.out.println("Ingrese el género del libro:");
+        String generoLibro = scanner.nextLine();
+
+        try {
+            List<Libro> librosEncontrados = buscarLibroPorGenero(generoLibro);
+            if (!librosEncontrados.isEmpty()) {
+                System.out.println("Libros encontrados:");
+                for (Libro libro : librosEncontrados) {
+                    System.out.println(libro);
+                }
+            } else {
+                System.out.println("No se encontraron libros del género especificado.");
+            }
+        } catch (LibroNoEncontradoException e) {
+            System.out.println("Libros no encontrados: " + e.getMessage());
+        }
+    }
+
+  
+    // Método para buscar un libro por título y lanzar la excepción si no se encuentra
+    private Libro buscarLibroPorTitulo(String titulo) throws LibroNoEncontradoException {
+        for (Libro libro : libros) {
+            if (libro.getTitulo().equalsIgnoreCase(titulo)) {
+                return libro;
+            }
+        }
+        throw new LibroNoEncontradoException("Libro con título '" + titulo + "' no encontrado.");
+    }
+
+    // Método para buscar libros por autor y lanzar la excepción si no se encuentra ninguno
+    private List<Libro> buscarLibroPorAutor(String autor) throws LibroNoEncontradoException {
+        List<Libro> librosEncontrados = new ArrayList<>();
+        for (Libro libro : libros) {
+            if (libro.getAutor().equalsIgnoreCase(autor)) {
+                librosEncontrados.add(libro);
+            }
+        }
+        if (librosEncontrados.isEmpty()) {
+            throw new LibroNoEncontradoException("Libros del autor '" + autor + "' no encontrados.");
+        }
+        return librosEncontrados;
+    }
+
+    // Método para buscar libros por género y lanzar la excepción si no se encuentra ninguno
+    private List<Libro> buscarLibroPorGenero(String genero) throws LibroNoEncontradoException {
+        List<Libro> librosEncontrados = new ArrayList<>();
+        for (Libro libro : libros) {
+            if (libro.getGenero().equalsIgnoreCase(genero)) {
+                librosEncontrados.add(libro);
+            }
+        }
+        if (librosEncontrados.isEmpty()) {
+            throw new LibroNoEncontradoException("Libros del género '" + genero + "' no encontrados.");
+        }
+        return librosEncontrados;
     }
 
     // Implementación de la consulta de libros disponibles
