@@ -1,10 +1,13 @@
 package biblioteca;
 
 import biblioteca.notificacion.AbstractBiblioteca;
+import biblioteca.Utils.ConsultasUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.InputMismatchException;
+import java.time.LocalDate;
 
 public class Biblioteca extends AbstractBiblioteca {
 
@@ -45,17 +48,18 @@ public class Biblioteca extends AbstractBiblioteca {
         return null;
     }
 
-    public void menuPrincipal() {
-        Scanner scanner = new Scanner(System.in);
-        Usuario usuario = null;
+   public void menuPrincipal() {
+    Scanner scanner = new Scanner(System.in);
+    Usuario usuario = null;
 
-        while (usuario == null) {
-            System.out.println("\n--- Biblioteca - Menú Principal ---");
-            System.out.println("1. Registrarse");
-            System.out.println("2. Iniciar sesión");
-            System.out.println("3. Salir");
-            System.out.print("Seleccione una opción: ");
+    while (usuario == null) {
+        System.out.println("\n--- Biblioteca - Menú Principal ---");
+        System.out.println("1. Registrarse");
+        System.out.println("2. Iniciar sesión");
+        System.out.println("3. Salir");
+        System.out.print("Seleccione una opción: ");
 
+        try {
             int opcion = scanner.nextInt();
             scanner.nextLine(); 
 
@@ -72,10 +76,14 @@ public class Biblioteca extends AbstractBiblioteca {
                 default:
                     System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
             }
+        } catch (InputMismatchException e) {
+            System.out.println("Error: Ingrese un número entero válido. Por favor, vuelva a intentarlo.");
+            scanner.nextLine(); // Limpiar el buffer de entrada para evitar un bucle infinito
         }
-
-        menuBiblioteca(usuario);
     }
+
+    menuBiblioteca(usuario);
+}
 
     public Usuario registrarNuevoUsuario() {
         Scanner scanner = new Scanner(System.in);
@@ -104,7 +112,8 @@ public class Biblioteca extends AbstractBiblioteca {
             System.out.println("3. Devolver libro");
             System.out.println("4. Ver libros alquilados");
             System.out.println("5. Administrar libros"); 
-            System.out.println("6. Salir");
+            System.out.println("6. Consultas");
+            System.out.println("7. Salir");
             System.out.print("Seleccione una opción: ");
             int opcion = scanner.nextInt();
             scanner.nextLine(); 
@@ -126,6 +135,9 @@ public class Biblioteca extends AbstractBiblioteca {
                     menuAdministrarLibros(usuario); 
                     break;
                 case 6:
+                    realizarConsultas();
+                    break;
+                case 7:
                     System.out.println("Saliendo del sistema. ¡Hasta luego!");
                     System.exit(0);
                
@@ -134,7 +146,56 @@ public class Biblioteca extends AbstractBiblioteca {
             }
         }
     }
+public void realizarConsultas() {
+        while (true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("\n--- Consultas ---");
+            System.out.println("1. Ver libros disponibles");
+            System.out.println("2. Ver alquileres vencidos");
+            System.out.println("3. Volver al menú principal");
+            System.out.print("Seleccione una opción: ");
 
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer de entrada
+
+            switch (opcion) {
+                case 1:
+                    verLibrosDisponibles();
+                    break;
+                case 2:
+                    verAlquileresVencidos();
+                    break;
+                case 3:
+                    return;
+                default:
+                    System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
+            }
+        }
+    }
+
+    // Implementación de la consulta de libros disponibles
+    public void verLibrosDisponibles() {
+        System.out.println("\n--- Libros Disponibles ---");
+        for (Libro libro : libros) {
+            if (libro.isDisponible()) {
+                System.out.println(libro.getTitulo() + " - " + libro.getAutor() + " - " + libro.getGenero());
+            }
+        }
+    }
+
+  
+// Implementación de la consulta de alquileres vencidos
+public void verAlquileresVencidos() {
+    System.out.println("\n--- Alquileres Vencidos ---");
+    LocalDate fechaActual = LocalDate.now();
+    for (Alquiler alquiler : alquileres) {
+        if (!alquiler.isDevuelto() && alquiler.getFechaDevolucion().isBefore(fechaActual)) {
+            System.out.println("Usuario: " + alquiler.getUsuario().getNombre() +
+                    " - Libro: " + alquiler.getLibro().getTitulo() +
+                    " - Fecha de devolución: " + alquiler.getFechaDevolucion());
+        }
+    }
+}
     public void verCatalogoLibros() {
         System.out.println("\n--- Catálogo de Libros ---");
         for (Libro libro : libros) {
