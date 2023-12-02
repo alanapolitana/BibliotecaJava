@@ -129,8 +129,12 @@ public class Biblioteca extends AbstractBiblioteca {
                     alquilarLibro(usuario);
                     break;
                 case 3:
+                try {
                     devolverLibro(usuario);
-                    break;
+                } catch (DevolucionFueraDePlazoException e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
+                break;
                 case 4:
                     verLibrosAlquilados(usuario);
                     break;
@@ -153,31 +157,31 @@ public class Biblioteca extends AbstractBiblioteca {
         }
     }
 public void realizarConsultas() {
-        while (true) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("\n--- Consultas ---");
-            System.out.println("1. Ver libros disponibles");
-            System.out.println("2. Ver alquileres vencidos");
-            System.out.println("3. Volver al menú principal");
-            System.out.print("Seleccione una opción: ");
+    while (true) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Consultas ---");
+        System.out.println("1. Ver libros disponibles");
+        System.out.println("2. Ver alquileres vencidos");
+        System.out.println("3. Volver al menú principal");
+        System.out.print("Seleccione una opción: ");
 
-            int opcion = scanner.nextInt();
-            scanner.nextLine(); // Limpiar el buffer de entrada
+        int opcion = scanner.nextInt();
+        scanner.nextLine(); 
 
-            switch (opcion) {
-                case 1:
-                    verLibrosDisponibles();
-                    break;
-                case 2:
-                    verAlquileresVencidos();
-                    break;
-                case 3:
-                    return;
-                default:
-                    System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
-            }
+        switch (opcion) {
+            case 1:
+                ConsultasUtils.obtenerLibrosDisponibles(libros); 
+                break;
+            case 2:
+                ConsultasUtils.obtenerAlquileresVencidos(alquileres);
+                break;
+            case 3:
+                return;
+            default:
+                System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
         }
     }
+}
 
 public void menuConsultas() {
     Scanner scanner = new Scanner(System.in);
@@ -211,7 +215,6 @@ public void menuConsultas() {
         }
     }
 }
-// Nuevo método para buscar libros por título
     public void buscarLibroPorTitulo() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n--- Búsqueda de Libro por Título ---");
@@ -226,7 +229,6 @@ public void menuConsultas() {
         }
     }
 
-    // Nuevo método para buscar libros por autor
     public void buscarLibroPorAutor() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n--- Búsqueda de Libro por Autor ---");
@@ -248,7 +250,6 @@ public void menuConsultas() {
         }
     }
 
-    // Nuevo método para buscar libros por género
     public void buscarLibroPorGenero() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n--- Búsqueda de Libro por Género ---");
@@ -271,7 +272,6 @@ public void menuConsultas() {
     }
 
   
-    // Método para buscar un libro por título y lanzar la excepción si no se encuentra
     private Libro buscarLibroPorTitulo(String titulo) throws LibroNoEncontradoException {
         for (Libro libro : libros) {
             if (libro.getTitulo().equalsIgnoreCase(titulo)) {
@@ -281,7 +281,6 @@ public void menuConsultas() {
         throw new LibroNoEncontradoException("Libro con título '" + titulo + "' no encontrado.");
     }
 
-    // Método para buscar libros por autor y lanzar la excepción si no se encuentra ninguno
     private List<Libro> buscarLibroPorAutor(String autor) throws LibroNoEncontradoException {
         List<Libro> librosEncontrados = new ArrayList<>();
         for (Libro libro : libros) {
@@ -295,7 +294,6 @@ public void menuConsultas() {
         return librosEncontrados;
     }
 
-    // Método para buscar libros por género y lanzar la excepción si no se encuentra ninguno
     private List<Libro> buscarLibroPorGenero(String genero) throws LibroNoEncontradoException {
         List<Libro> librosEncontrados = new ArrayList<>();
         for (Libro libro : libros) {
@@ -309,7 +307,7 @@ public void menuConsultas() {
         return librosEncontrados;
     }
 
-    // Implementación de la consulta de libros disponibles
+
     public void verLibrosDisponibles() {
         System.out.println("\n--- Libros Disponibles ---");
         for (Libro libro : libros) {
@@ -320,7 +318,7 @@ public void menuConsultas() {
     }
 
   
-// Implementación de la consulta de alquileres vencidos
+
 public void verAlquileresVencidos() {
     System.out.println("\n--- Alquileres Vencidos ---");
     LocalDate fechaActual = LocalDate.now();
@@ -362,29 +360,39 @@ public void verAlquileresVencidos() {
         System.out.println("Libro no disponible o no encontrado. Por favor, seleccione otro libro.");
     }
 
-    public void devolverLibro(Usuario usuario) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\n--- Devolución de Libro ---");
-        System.out.println("Libros alquilados:");
-        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
-            String estadoDevolucion = alquiler.isDevuelto() ? "Devuelto" : "No devuelto";
-            System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion() +
-                    " - Estado: " + estadoDevolucion);
-        }
-        System.out.println("Ingrese el título del libro que desea devolver:");
-        String tituloLibro = scanner.nextLine();
-
-        for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
-            if (alquiler.getLibro().getTitulo().equalsIgnoreCase(tituloLibro) && !alquiler.isDevuelto()) {
-                alquiler.setDevuelto(true);
-                alquiler.getLibro().setDisponible(true);
-                System.out.println("Libro devuelto con éxito.");
-                return;
-            }
-        }
-
-        System.out.println("Libro no encontrado en su lista de libros alquilados o ya ha sido devuelto.");
+  public void devolverLibro(Usuario usuario) throws DevolucionFueraDePlazoException {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("\n--- Devolución de Libro ---");
+    System.out.println("Libros alquilados:");
+    for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+        String estadoDevolucion = alquiler.isDevuelto() ? "Devuelto" : "No devuelto";
+        System.out.println(alquiler.getLibro().getTitulo() + " - Fecha de devolución: " + alquiler.getFechaDevolucion() +
+                " - Estado: " + estadoDevolucion);
     }
+    System.out.println("Ingrese el título del libro que desea devolver:");
+    String tituloLibro = scanner.nextLine();
+
+    for (Alquiler alquiler : usuario.getLibrosAlquilados()) {
+        if (alquiler.getLibro().getTitulo().equalsIgnoreCase(tituloLibro) && !alquiler.isDevuelto()) {
+            if (esDevolucionFueraDePlazo(alquiler)) {
+                throw new DevolucionFueraDePlazoException("Devolución fuera de plazo. Se han aplicado cargos adicionales.");
+            }
+            alquiler.setDevuelto(true);
+            alquiler.getLibro().setDisponible(true);
+            System.out.println("Libro devuelto con éxito.");
+            return;
+        }
+    }
+
+    System.out.println("Libro no encontrado en su lista de libros alquilados o ya ha sido devuelto.");
+}
+
+private boolean esDevolucionFueraDePlazo(Alquiler alquiler) {
+    LocalDate fechaActual = LocalDate.now();
+    return !alquiler.isDevuelto() && alquiler.getFechaDevolucion().isBefore(fechaActual);
+}
+
+
 
     public void verLibrosAlquilados(Usuario usuario) {
         System.out.println("\n--- Libros Alquilados ---");

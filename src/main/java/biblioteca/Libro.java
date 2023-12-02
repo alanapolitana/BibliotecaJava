@@ -6,7 +6,6 @@ public class Libro {
     private String genero;
     private boolean disponible;
 
-    // Constructor
     public Libro(String titulo, String autor, String genero, boolean disponible) {
         this.titulo = titulo;
         this.autor = autor;
@@ -14,7 +13,6 @@ public class Libro {
         this.disponible = disponible;
     }
 
-    // Getters y setters (puedes generarlos automáticamente en tu IDE)
     public String getTitulo() {
         return titulo;
     }
@@ -45,5 +43,13 @@ public class Libro {
 
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
+    }
+
+    @Override
+    public String toString() {
+        return "Título: " + this.titulo +
+               ", Autor: " + this.autor +
+               ", Género: " + this.genero +
+               ", Disponible: " + (this.disponible ? "Sí" : "No");
     }
 }
