@@ -411,7 +411,7 @@ private boolean esDevolucionFueraDePlazo(Alquiler alquiler) {
             System.out.println("2. Eliminar libro");
             System.out.println("3. Volver al menú principal");
 
-            System.out.print("Seleccione una opción: ");
+            System.out.print("Seleccione una opción:: ");
             int opcion = scanner.nextInt();
             scanner.nextLine(); 
 
