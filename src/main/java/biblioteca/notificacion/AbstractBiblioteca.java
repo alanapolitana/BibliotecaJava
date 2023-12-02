@@ -16,4 +16,5 @@ public abstract class AbstractBiblioteca implements SistemaNotificacion {
     public void notificarUsuario(String mensaje) {
         System.out.println("Notificación de la biblioteca '" + getNombreBiblioteca() + "': " + mensaje);
     }
+    
 }

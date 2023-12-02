@@ -15,6 +15,7 @@ public class ConsultasUtils {
                 .filter(Libro::isDisponible)
                 .collect(Collectors.toList());
 
+        
         if (librosDisponibles.isEmpty()) {
             System.out.println("No hay libros disponibles en este momento.");
         } else {

@@ -10,7 +10,7 @@ public class Usuario {
     private String contraseña;
     private List<Alquiler> librosAlquilados;
 
-    // Constructor
+ 
     public Usuario(int ID_usuario, String nombre, String correo, String contraseña, List<Alquiler> librosAlquilados) {
         this.ID_usuario = ID_usuario;
         this.nombre = nombre;
@@ -19,7 +19,6 @@ public class Usuario {
         this.librosAlquilados = librosAlquilados;
     }
 
-    // Getters y setters (puedes generarlos automáticamente en tu IDE)
     public int getID_usuario() {
         return ID_usuario;
     }

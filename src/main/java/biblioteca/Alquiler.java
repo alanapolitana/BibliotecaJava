@@ -9,7 +9,7 @@ public class Alquiler {
     private LocalDate fechaDevolucion;
     private boolean devuelto;
 
-    // Constructor
+   
     public Alquiler(Usuario usuario, Libro libro) {
         this.usuario = usuario;
         this.libro = libro;
@@ -18,7 +18,6 @@ public class Alquiler {
         this.devuelto = false;
     }
 
-    // Getters y setters (puedes generarlos automáticamente en tu IDE)
     public Usuario getUsuario() {
         return usuario;
     }
@@ -50,6 +49,8 @@ public class Alquiler {
     public boolean isDevuelto() {
         return devuelto;
     }
+    
+    
 
     public void setDevuelto(boolean devuelto) {
         this.devuelto = devuelto;
